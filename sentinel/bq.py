@@ -45,6 +45,27 @@ class Warehouse:
         self.last_bytes_billed = job.total_bytes_billed or 0
         return rows
 
+    def query_raw(self, sql):
+        """Run SQL exactly as given, with no substitution.
+
+        Use this for model-authored SQL. `query` calls `str.format`, so any
+        brace in a generated statement would raise before it ever reached
+        BigQuery.
+        """
+        from google.cloud import bigquery as _bq
+
+        job = self._client.query(
+            sql,
+            job_config=_bq.QueryJobConfig(
+                maximum_bytes_billed=config.MAX_BYTES_BILLED,
+                use_legacy_sql=False,
+            ),
+            location=self.location,
+        )
+        rows = [dict(row) for row in job.result()]
+        self.last_bytes_billed = job.total_bytes_billed or 0
+        return rows
+
     def scalar(self, sql, **fmt):
         rows = self.query(sql, **fmt)
         return rows[0] if rows else {}
