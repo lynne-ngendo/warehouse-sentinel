@@ -1,0 +1,4 @@
+[{"name":"worker_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"worker_name","type":"STRING","mode":"REQUIRED"},
+ {"name":"unit_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"hired_date","type":"DATE","mode":"REQUIRED"}]

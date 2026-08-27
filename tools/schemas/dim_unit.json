@@ -1,0 +1,4 @@
+[{"name":"unit_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"unit_name","type":"STRING","mode":"REQUIRED"},
+ {"name":"subcounty","type":"STRING","mode":"REQUIRED"},
+ {"name":"county","type":"STRING","mode":"REQUIRED"}]

@@ -1,0 +1,6 @@
+[{"name":"household_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"unit_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"registered_date","type":"DATE","mode":"REQUIRED"},
+ {"name":"member_count","type":"INTEGER","mode":"REQUIRED"},
+ {"name":"deleted_at","type":"TIMESTAMP","mode":"NULLABLE"},
+ {"name":"is_active","type":"BOOLEAN","mode":"REQUIRED"}]

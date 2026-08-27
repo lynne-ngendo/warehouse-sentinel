@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Regenerable from tools/generate_warehouse.py with a fixed seed.
+data/

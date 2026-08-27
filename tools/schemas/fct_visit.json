@@ -1,0 +1,11 @@
+[{"name":"visit_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"visit_date","type":"DATE","mode":"REQUIRED"},
+ {"name":"visit_ts","type":"TIMESTAMP","mode":"REQUIRED"},
+ {"name":"unit_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"worker_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"household_id","type":"STRING","mode":"REQUIRED"},
+ {"name":"visit_type","type":"STRING","mode":"REQUIRED"},
+ {"name":"outcome","type":"STRING","mode":"REQUIRED"},
+ {"name":"source_system","type":"STRING","mode":"REQUIRED"},
+ {"name":"ingested_at","type":"TIMESTAMP","mode":"REQUIRED"},
+ {"name":"source_batch","type":"STRING","mode":"REQUIRED"}]
