@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Warehouse Sentinel architecture</title>
+<style>
+  html,body{margin:0;padding:0;background:#fff;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  svg{display:block;width:100vw;height:auto}
+</style>
+<svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/>
+    </marker>
+    <style>
+      .t{font:600 15px -apple-system,Segoe UI,Roboto,sans-serif;fill:#202124}
+      .s{font:13px -apple-system,Segoe UI,Roboto,sans-serif;fill:#5f6368}
+      .k{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#1a73e8;letter-spacing:.6px}
+      .h{font:700 27px -apple-system,Segoe UI,Roboto,sans-serif;fill:#202124}
+      .hs{font:15px -apple-system,Segoe UI,Roboto,sans-serif;fill:#5f6368}
+      .box{fill:#fff;stroke:#dadce0;stroke-width:2;rx:10}
+      .prim{fill:#f8fbff;stroke:#1a73e8;stroke-width:2;rx:10}
+      .ln{stroke:#5f6368;stroke-width:2;fill:none;marker-end:url(#a)}
+      .dl{stroke:#9aa0a6;stroke-width:2;fill:none;stroke-dasharray:6 5;marker-end:url(#a)}
+    </style>
+  </defs>
+
+  <text class="h" x="60" y="62">Warehouse Sentinel</text>
+  <text class="hs" x="60" y="90">Detect, diagnose, and file. Detection is deterministic; the model is only asked what broke and why.</text>
+
+  <!-- pipeline band -->
+  <rect class="box" x="60"  y="150" width="270" height="130"/>
+  <text class="k" x="82" y="182">TRIGGER</text>
+  <text class="t" x="82" y="212">Cloud Scheduler</text>
+  <text class="s" x="82" y="238">Cron, every 6 hours</text>
+  <text class="s" x="82" y="260">Also runnable on demand</text>
+
+  <rect class="prim" x="400" y="150" width="330" height="130"/>
+  <text class="k" x="422" y="182">DETECT — CLOUD RUN JOB</text>
+  <text class="t" x="422" y="212">Check layer</text>
+  <text class="s" x="422" y="238">7 contracts as SQL, pass or fail</text>
+  <text class="s" x="422" y="260">Evidence query only on failure</text>
+
+  <rect class="prim" x="800" y="150" width="330" height="130"/>
+  <text class="k" x="822" y="182">DIAGNOSE — ADK AGENT</text>
+  <text class="t" x="822" y="212">Gemini on Vertex AI</text>
+  <text class="s" x="822" y="238">Classify, write repro query,</text>
+  <text class="s" x="822" y="260">draft ticket. Bounded loop.</text>
+
+  <rect class="box" x="1200" y="150" width="330" height="130"/>
+  <text class="k" x="1222" y="182">ACT</text>
+  <text class="t" x="1222" y="212">GitHub Issues</text>
+  <text class="s" x="1222" y="238">One issue per finding,</text>
+  <text class="s" x="1222" y="260">idempotent on retry</text>
+
+  <line class="ln" x1="330" y1="215" x2="396" y2="215"/>
+  <line class="ln" x1="730" y1="215" x2="796" y2="215"/>
+  <line class="ln" x1="1130" y1="215" x2="1196" y2="215"/>
+
+  <!-- supporting services -->
+  <rect class="box" x="400" y="420" width="330" height="120"/>
+  <text class="k" x="422" y="452">DATA</text>
+  <text class="t" x="422" y="482">BigQuery</text>
+  <text class="s" x="422" y="508">Read-only, maximum bytes billed</text>
+
+  <rect class="box" x="800" y="420" width="330" height="120"/>
+  <text class="k" x="822" y="452">STATE</text>
+  <text class="t" x="822" y="482">Firestore</text>
+  <text class="s" x="822" y="508">Contracts, run history, dedupe keys</text>
+
+  <rect class="box" x="1200" y="420" width="330" height="120"/>
+  <text class="k" x="1222" y="452">SECRETS</text>
+  <text class="t" x="1222" y="482">Secret Manager</text>
+  <text class="s" x="1222" y="508">GitHub token. No key for Vertex:</text>
+  <text class="s" x="1222" y="530">the service account authenticates.</text>
+
+  <line class="dl" x1="565" y1="284" x2="565" y2="416"/>
+  <line class="dl" x1="965" y1="284" x2="965" y2="416"/>
+  <line class="dl" x1="1365" y1="284" x2="1365" y2="416"/>
+
+  <!-- findings service -->
+  <rect class="box" x="800" y="640" width="330" height="120"/>
+  <text class="k" x="822" y="672">SERVE</text>
+  <text class="t" x="822" y="702">Cloud Run service</text>
+  <text class="s" x="822" y="728">Findings API and page, public</text>
+  <line class="dl" x1="965" y1="636" x2="965" y2="544"/>
+
+  <!-- principle callout -->
+  <rect x="60" y="420" width="270" height="340" rx="10" fill="#f1f3f4" stroke="#dadce0" stroke-width="2"/>
+  <text class="k" x="82" y="452">WHY THIS SPLIT</text>
+  <text class="s" x="82" y="486">A model that hallucinates</text>
+  <text class="s" x="82" y="508">cannot invent an incident.</text>
+  <text class="s" x="82" y="546">A model that is unavailable</text>
+  <text class="s" x="82" y="568">does not stop detection.</text>
+  <text class="s" x="82" y="606">Every finding is a fact</text>
+  <text class="s" x="82" y="628">produced by SQL, not an</text>
+  <text class="s" x="82" y="650">opinion produced by a model.</text>
+  <text class="s" x="82" y="688">One check failing is reported,</text>
+  <text class="s" x="82" y="710">not fatal: the sweep continues.</text>
+
+  <text class="s" x="60" y="838">Faults detected: fanout duplication, silent source stall, soft-delete leak, and coverage gap.</text>
+  <text class="s" x="60" y="862">Each is caught by exactly one contract, with no false positives on clean data.</text>
+</svg>
