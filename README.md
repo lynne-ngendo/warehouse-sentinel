@@ -20,7 +20,7 @@ evidence to Gemini for diagnosis.
 | Layer | What it does | Technology |
 | --- | --- | --- |
 | Detection | Turns each contract into SQL and decides pass or fail | BigQuery, read-only, cost-capped |
-| Diagnosis | Classifies the failure, writes the reproducing query, drafts the ticket | Gemini on Vertex AI |
+| Diagnosis | Classifies the failure, writes the reproducing query, drafts the ticket | Gemini 3.5 Flash on Vertex AI |
 | Orchestration | Runs the sweep, calls the tools, bounds the loop | Agent Development Kit |
 | State | Run history and idempotency keys | Firestore |
 | Action | Files the ticket | GitHub Issues API |
@@ -36,12 +36,20 @@ hold and which fault violates each.
 
 ## Reproducible testing
 
-TODO before submission: complete spin-up steps, verified from a clean clone.
+Every step below has been run end to end. `requirements.txt` is verified to
+install from clean into a fresh virtualenv.
 
 ### 1. Prerequisites
 
-```
-gcloud CLI, Python 3.11, a Google Cloud project with billing enabled
+- Python 3.11 or later
+- A Google Cloud project with billing enabled, and the BigQuery, Vertex AI, and
+  Cloud Run APIs turned on
+- `gcloud` authenticated, including application default credentials:
+
+```sh
+gcloud auth login
+gcloud auth application-default login
+pip install -r requirements.txt
 ```
 
 ### 2. Configure
@@ -68,6 +76,16 @@ python tools/run_checks.py
 ```
 
 All seven contracts should hold on clean data.
+
+### 4b. Run the full sweep, detection plus diagnosis
+
+```sh
+python tools/run_agent.py
+```
+
+Gemini 3.x is served from the `global` Vertex location. Regional endpoints
+return 404 for every 3.x model, so leave `SENTINEL_VERTEX_LOCATION` alone
+unless you know otherwise.
 
 ### 5. Inject a fault and watch it get caught
 
@@ -96,6 +114,22 @@ positives.
 
 No external or third-party data. The warehouse is synthetically generated with
 a fixed seed, so the faults are reproducible for demo and judging.
+
+The checks run against any BigQuery dataset that conforms to the declared
+schema in [contracts.md](contracts.md). Target project and dataset are
+configurable through `SENTINEL_PROJECT` and `SENTINEL_DATASET`. The generator
+exists to make the faults reproducible, not because the checks are tied to it.
+
+## Security
+
+The Cloud Run service account authenticates to Vertex AI directly, so there is
+no model API key anywhere in this project. The only secret in Secret Manager is
+the GitHub token used to file issues.
+
+Every warehouse query is read-only and capped with `maximum_bytes_billed`, so a
+runaway scan is rejected by BigQuery before it costs anything. Model-authored
+SQL runs through a separate path that accepts a single `SELECT` or `WITH`,
+refuses write keywords, and refuses multiple statements.
 
 ## License
 
