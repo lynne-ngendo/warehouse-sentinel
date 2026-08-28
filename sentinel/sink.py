@@ -163,7 +163,8 @@ class GitHubIssueSink:
                 return issue
         return None
 
-    def file(self, result, diagnosis, verification, model, dry_run=False):
+    def file(self, result, diagnosis, verification, model, dry_run=False,
+             ignore_suppression=False):
         """File one finding. Returns what happened and why."""
         if not diagnosis:
             return {"action": "skipped", "reason": "no diagnosis"}
@@ -176,10 +177,13 @@ class GitHubIssueSink:
         if not self.token:
             return {"action": "failed", "reason": "no GitHub token available"}
 
-        try:
-            duplicate = self.existing(fp)
-        except urllib.error.HTTPError as exc:
-            return {"action": "failed", "reason": f"HTTP {exc.code} listing issues"}
+        duplicate = None
+        if not ignore_suppression:
+            try:
+                duplicate = self.existing(fp)
+            except urllib.error.HTTPError as exc:
+                return {"action": "failed",
+                        "reason": f"HTTP {exc.code} listing issues"}
 
         if duplicate:
             return {

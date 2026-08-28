@@ -33,6 +33,13 @@ def main():
         "--dry-run", action="store_true",
         help="render the issue that would be filed, without filing it",
     )
+    parser.add_argument(
+        "--ignore-suppression", action="store_true",
+        help=(
+            "file even when an open issue already reports this finding. For "
+            "recording a demonstration, not for scheduled runs."
+        ),
+    )
     args = parser.parse_args()
 
     wh = Warehouse(dataset=args.dataset)
@@ -67,6 +74,7 @@ def main():
             filed = sink.file(
                 result, diagnosis, verification, trace["model"],
                 dry_run=args.dry_run,
+                ignore_suppression=args.ignore_suppression,
             )
 
         report["findings"].append({

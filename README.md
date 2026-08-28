@@ -87,6 +87,17 @@ Gemini 3.x is served from the `global` Vertex location. Regional endpoints
 return 404 for every 3.x model, so leave `SENTINEL_VERTEX_LOCATION` alone
 unless you know otherwise.
 
+### 5. File the findings
+
+```sh
+python tools/run_agent.py --dry-run          # render the issue, file nothing
+python tools/run_agent.py --file-issues      # file it
+```
+
+An open issue with a matching fingerprint suppresses a repeat, so a scheduled
+sweep files once rather than every six hours. Pass `--ignore-suppression` to
+file anyway, which is what a demonstration needs.
+
 ### 5. Inject a fault and watch it get caught
 
 ```sh
@@ -124,7 +135,23 @@ exists to make the faults reproducible, not because the checks are tied to it.
 
 The Cloud Run service account authenticates to Vertex AI directly, so there is
 no model API key anywhere in this project. The only secret in Secret Manager is
-the GitHub token used to file issues.
+a GitHub token scoped to issues on a single repository.
+
+Create it as a fine-grained personal access token with `Issues: read and write`
+on this repository only, then store it:
+
+```sh
+printf %s "$GITHUB_TOKEN" | gcloud secrets create sentinel-github-token \
+  --data-file=- --project "$SENTINEL_PROJECT"
+
+export SENTINEL_GITHUB_TOKEN_SECRET="projects/$SENTINEL_PROJECT/secrets/sentinel-github-token/versions/latest"
+```
+
+Locally, pipe a token in without writing it to disk:
+
+```sh
+SENTINEL_GITHUB_TOKEN=$(gh auth token) python tools/run_agent.py --file-issues
+```
 
 Every warehouse query is read-only and capped with `maximum_bytes_billed`, so a
 runaway scan is rejected by BigQuery before it costs anything. Model-authored
