@@ -5,7 +5,7 @@
   html,body{margin:0;padding:0;background:#fff;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
   svg{display:block;width:100vw;height:auto}
 </style>
-<svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 1600 910" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/>
@@ -41,7 +41,7 @@
 
   <rect class="prim" x="800" y="150" width="330" height="130"/>
   <text class="k" x="822" y="182">DIAGNOSE — ADK AGENT</text>
-  <text class="t" x="822" y="212">Gemini on Vertex AI</text>
+  <text class="t" x="822" y="212">Gemini 3.5 Flash on Vertex</text>
   <text class="s" x="822" y="238">Classify, write repro query,</text>
   <text class="s" x="822" y="260">draft ticket. Bounded loop.</text>
 
@@ -63,28 +63,29 @@
 
   <rect class="box" x="800" y="420" width="330" height="120"/>
   <text class="k" x="822" y="452">STATE</text>
-  <text class="t" x="822" y="482">Firestore</text>
-  <text class="s" x="822" y="508">Contracts, run history, dedupe keys</text>
+  <text class="t" x="822" y="482">The issue body</text>
+  <text class="s" x="822" y="508">A fingerprint of the failure identity.</text>
+  <text class="s" x="822" y="530">No separate store to drift.</text>
 
   <rect class="box" x="1200" y="420" width="330" height="120"/>
-  <text class="k" x="1222" y="452">SECRETS</text>
-  <text class="t" x="1222" y="482">Secret Manager</text>
-  <text class="s" x="1222" y="508">GitHub token. No key for Vertex:</text>
-  <text class="s" x="1222" y="530">the service account authenticates.</text>
+  <text class="k" x="1222" y="452">CREDENTIALS</text>
+  <text class="t" x="1222" y="482">One token, scoped to issues</text>
+  <text class="s" x="1222" y="508">No key for Vertex: the service</text>
+  <text class="s" x="1222" y="530">account authenticates directly.</text>
 
   <line class="dl" x1="565" y1="284" x2="565" y2="416"/>
   <line class="dl" x1="965" y1="284" x2="965" y2="416"/>
   <line class="dl" x1="1365" y1="284" x2="1365" y2="416"/>
 
   <!-- findings service -->
-  <rect class="box" x="800" y="640" width="330" height="120"/>
+  <rect class="box" x="800" y="640" width="330" height="140"/>
   <text class="k" x="822" y="672">SERVE</text>
   <text class="t" x="822" y="702">Cloud Run service</text>
-  <text class="s" x="822" y="728">Findings API and page, public</text>
-  <line class="dl" x1="965" y1="636" x2="965" y2="544"/>
+  <text class="s" x="822" y="728">Public page, no auth. Runs the</text>
+  <text class="s" x="822" y="750">check layer on demand.</text>
 
   <!-- principle callout -->
-  <rect x="60" y="420" width="270" height="340" rx="10" fill="#f1f3f4" stroke="#dadce0" stroke-width="2"/>
+  <rect x="60" y="420" width="270" height="386" rx="10" fill="#f1f3f4" stroke="#dadce0" stroke-width="2"/>
   <text class="k" x="82" y="452">WHY THIS SPLIT</text>
   <text class="s" x="82" y="486">A model that hallucinates</text>
   <text class="s" x="82" y="508">cannot invent an incident.</text>
@@ -95,7 +96,9 @@
   <text class="s" x="82" y="650">opinion produced by a model.</text>
   <text class="s" x="82" y="688">One check failing is reported,</text>
   <text class="s" x="82" y="710">not fatal: the sweep continues.</text>
+  <text class="s" x="82" y="748">The model's query is executed</text>
+  <text class="s" x="82" y="770">before any issue is filed.</text>
 
-  <text class="s" x="60" y="838">Faults detected: fanout duplication, silent source stall, soft-delete leak, and coverage gap.</text>
-  <text class="s" x="60" y="862">Each is caught by exactly one contract, with no false positives on clean data.</text>
+  <text class="s" x="60" y="848">Faults detected: fanout duplication, silent source stall, soft-delete leak, and coverage gap.</text>
+  <text class="s" x="60" y="872">Each is caught by exactly one contract, with no false positives on clean data.</text>
 </svg>
