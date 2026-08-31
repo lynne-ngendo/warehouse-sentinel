@@ -7,6 +7,8 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
+COPY sentinel ./sentinel
+COPY contracts.md ./
 
 # Cloud Run injects PORT; default to 8080 for local runs.
 CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}

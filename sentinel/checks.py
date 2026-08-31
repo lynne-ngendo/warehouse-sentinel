@@ -9,6 +9,7 @@ misbehaves cannot invent an incident, and a model that is unavailable does not
 stop detection.
 """
 
+import concurrent.futures
 import time
 import traceback
 
@@ -338,5 +339,25 @@ def run_one(wh, spec):
     )
 
 
-def run_all(wh):
-    return [run_one(wh, spec) for spec in CHECKS]
+def run_all(wh, parallel=True):
+    """Run every check.
+
+    Checks are independent reads, so they run concurrently. Sequentially the
+    sweep takes about 17 seconds, which is too slow for a page a person is
+    waiting on. Each check gets its own Warehouse so the BigQuery client is
+    not shared across threads.
+    """
+    if not parallel:
+        return [run_one(wh, spec) for spec in CHECKS]
+
+    def isolated(spec):
+        from .bq import Warehouse
+
+        return run_one(
+            Warehouse(project=wh.project, dataset=wh.dataset,
+                      location=wh.location),
+            spec,
+        )
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=7) as pool:
+        return list(pool.map(isolated, CHECKS))

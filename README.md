@@ -22,9 +22,13 @@ evidence to Gemini for diagnosis.
 | Detection | Turns each contract into SQL and decides pass or fail | BigQuery, read-only, cost-capped |
 | Diagnosis | Classifies the failure, writes the reproducing query, drafts the ticket | Gemini 3.5 Flash on Vertex AI |
 | Orchestration | Runs the sweep, calls the tools, bounds the loop | Agent Development Kit |
-| State | Run history and idempotency keys | Firestore |
-| Action | Files the ticket | GitHub Issues API |
-| Runtime | Scheduled sweep and findings service | Cloud Run, Cloud Scheduler |
+| Action | Files the issue, and suppresses repeats | GitHub Issues API |
+| Runtime | Findings service and on-demand sweep | Cloud Run |
+
+There is no separate state store. Each issue carries a fingerprint of the
+failure's identity in its body, so GitHub holds the state and an open issue
+suppresses a repeat. Nothing to provision, and nothing that can drift out of
+sync with the issues themselves.
 
 **The model never decides whether something is broken.** Detection is
 deterministic SQL. Gemini is only asked what broke and why.
